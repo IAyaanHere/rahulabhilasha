@@ -161,7 +161,7 @@ export function renderInvitation(config) {
         <div class="section__inner">
           <p class="section-kicker">${escapeHtml(copy.countdownKicker)}</p>
           <h2>${escapeHtml(copy.countdownTitle)}</h2>
-          <div class="countdown" id="countdown-clock" data-target="${escapeHtml(wedding.isoDateTime)}">
+          <div class="countdown" id="countdown-clock" data-target="${escapeHtml(wedding.isoDate || wedding.isoDateTime)}">
             ${["Days", "Hours", "Minutes", "Seconds"].map((label) => `
               <div class="countdown__unit">
                 <strong data-unit="${label.toLowerCase()}">00</strong>
@@ -178,14 +178,18 @@ export function renderInvitation(config) {
         <div class="section__inner section__inner--narrow">
           <p class="section-kicker">${escapeHtml(copy.timelineKicker)}</p>
           <h2>${escapeHtml(copy.timelineTitle)}</h2>
-          <div class="timeline">
+          <div class="timeline" id="programTimeline">
             ${program.map((item, index) => `
               <article class="timeline__item">
                 <div class="timeline__marker"><span>${index + 1}</span></div>
                 <div class="timeline__content">
-                  <time>${escapeHtml(item.time)}</time>
+                  <time>
+                    ${item.date ? `<span class="timeline-date">${escapeHtml(item.date)}</span>` : ""}
+                    ${item.time ? `<span class="timeline-hour">${escapeHtml(item.time)}</span>` : ""}
+                  </time>
                   <h3>${escapeHtml(item.title)}</h3>
-                  <p>${escapeHtml(item.detail)}</p>
+                  <p style="white-space: pre-line;">${escapeHtml(item.note || item.detail || "")}</p>
+                  ${item.mapLink ? `<a class="button button--light event-map-link" href="${escapeHtml(item.mapLink)}" target="_blank" rel="noreferrer" style="margin-top: 12px; display: inline-block;">View on Google Maps ↗</a>` : ""}
                 </div>
               </article>
             `).join("")}
@@ -204,7 +208,7 @@ export function renderInvitation(config) {
             <h3>${escapeHtml(venue.name)}</h3>
             <address>${escapeHtml(venue.address)}</address>
             <p>${escapeHtml(venue.note)}</p>
-            <a class="button button--light" href="${escapeHtml(venue.mapsUrl)}" target="_blank" rel="noreferrer">View on Google Maps ↗</a>
+            <a class="button button--light" href="${escapeHtml(venue.mapsUrl || venue.mapLink || venue.mapUrl)}" target="_blank" rel="noreferrer">View on Google Maps ↗</a>
           </div>
         </div>
       </section>
@@ -229,16 +233,21 @@ export function renderInvitation(config) {
         <div class="section__inner">
           <p class="section-kicker">${escapeHtml(copy.preWeddingKicker)}</p>
           <h2>${escapeHtml(copy.preWeddingTitle)}</h2>
-          <div class="event-grid">
-            ${preWeddingEvents.map((event) => `
+          <div class="event-grid" id="preWeddingEvents">
+            ${preWeddingEvents.map((event) => {
+              const metaParts = [];
+              if (event.time) metaParts.push(escapeHtml(event.time));
+              if (event.venue || event.location) metaParts.push(escapeHtml(event.venue || event.location));
+              return `
               <article class="event-card">
                 <span class="event-card__crest" aria-hidden="true">✦</span>
-                <h3>${escapeHtml(event.title)}</h3>
-                <p class="event-card__date">${escapeHtml(event.date)}</p>
-                <p>${escapeHtml(event.time)} · ${escapeHtml(event.venue)}</p>
-                <small>${escapeHtml(event.note)}</small>
+                <h3>${escapeHtml(event.title || event.name)}</h3>
+                ${event.date ? `<p class="event-card__date">${escapeHtml(event.date)}</p>` : ""}
+                ${metaParts.length > 0 ? `<p>${metaParts.join(" · ")}</p>` : ""}
+                ${event.note ? `<small style="white-space: pre-line;">${escapeHtml(event.note)}</small>` : ""}
+                ${event.mapLink ? `<a class="button button--light event-map-link" href="${escapeHtml(event.mapLink)}" target="_blank" rel="noreferrer" style="margin-top: 10px; display: inline-block;">View on Google Maps ↗</a>` : ""}
               </article>
-            `).join("")}
+            `;}).join("")}
           </div>
         </div>
       </section>

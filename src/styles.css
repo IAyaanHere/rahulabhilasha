@@ -242,9 +242,9 @@ img, video { display: block; max-width: 100%; }
 .hero__closing-line {
   max-width: 540px;
   margin: 17px auto 0;
-  font-size: clamp(10px, 1.5vw, 12px);
+  font-size: clamp(13px, 1.8vw, 15px);
   line-height: 1.7;
-  color: rgba(251,241,220,.76);
+  color: rgba(251,241,220,.92);
 }
 
 .scroll-cue {
@@ -468,7 +468,30 @@ h3 { font-family: var(--font-names); font-size: clamp(31px, 5vw, 48px); font-wei
   color: var(--gold);
   font-family: var(--font-display);
 }
-.timeline__content time { color: var(--gold); text-transform: uppercase; letter-spacing: .22em; font-size: 10px; font-weight: 800; }
+.timeline time,
+.timeline__content time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.35;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .22em;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.timeline time .timeline-hour,
+.timeline-hour {
+  font-size: .88em;
+  opacity: .9;
+  letter-spacing: .06em;
+}
+
+.timeline time .timeline-date,
+.timeline-date {
+  display: block;
+}
 .timeline__content h3 { margin: 4px 0 2px; color: var(--ivory); }
 .timeline__content p { margin: 0; color: rgba(251,241,220,.65); }
 
@@ -584,7 +607,7 @@ h3 { font-family: var(--font-names); font-size: clamp(31px, 5vw, 48px); font-wei
   .hero__name { font-size: clamp(38px, 10.8vw, 54px); }
   .hero__parents { max-width: 270px; margin-top: 7px; font-size: 7px; }
   .hero__ampersand { margin: 8px 0 7px; font-size: 19px; }
-  .hero__closing-line { max-width: 285px; margin-top: 12px; font-size: 8px; line-height: 1.55; }
+  .hero__closing-line { max-width: 340px; margin-top: 12px; font-size: 11.5px; line-height: 1.6; }
   .scratch-wrap { aspect-ratio: 1.08; border-radius: 18px }
   .date-card__date { max-width: 260px; }
   .gallery { height: 64vh; }
@@ -610,7 +633,7 @@ h3 { font-family: var(--font-names); font-size: clamp(31px, 5vw, 48px); font-wei
   .hero__name { font-size: clamp(35px, 9vw, 49px); }
   .hero__parents { margin-top: 5px; font-size: 6.5px; }
   .hero__ampersand { margin: 6px 0 5px; }
-  .hero__closing-line { margin-top: 9px; font-size: 7.5px; }
+  .hero__closing-line { margin-top: 9px; font-size: 10.5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

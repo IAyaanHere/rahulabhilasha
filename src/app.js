@@ -16,7 +16,151 @@ root.style.setProperty("--font-names", config.theme.fonts.names);
 root.style.setProperty("--font-display", config.theme.fonts.display);
 root.style.setProperty("--font-body", config.theme.fonts.body);
 
-document.title = `${config.couple.shortNameBride || config.couple.brideName} & ${config.couple.shortNameGroom || config.couple.groomName} | Wedding Invitation`;
+document.title = `${config.couple.shortNameBride || config.couple.brideName} & ${config.couple.shortNameGroom || config.couple.groomName} — Wedding Invitation`;
+
+export function setName(element, personConfig) {
+  if (!element || !personConfig) return;
+  const fullName = typeof personConfig === "string" ? personConfig : personConfig.name || "";
+  const shortName = (typeof personConfig === "object" && personConfig.shortName) ? personConfig.shortName : fullName.split(" ")[0];
+
+  const shortNameIndex = fullName.indexOf(shortName);
+  if (shortNameIndex !== -1) {
+    const prefix = fullName.slice(0, shortNameIndex).trim();
+    const suffix = fullName.slice(shortNameIndex + shortName.length).trim();
+    
+    const shortNameElement = document.createElement("span");
+    shortNameElement.textContent = shortName;
+    const nodes = [];
+    if (prefix) nodes.push(document.createTextNode(`${prefix} `));
+    nodes.push(shortNameElement);
+    if (suffix) nodes.push(document.createTextNode(` ${suffix}`));
+    element.replaceChildren(...nodes);
+  } else {
+    const span = document.createElement("span");
+    span.textContent = fullName;
+    element.replaceChildren(span);
+  }
+}
+
+export function renderProgram() {
+  const timeline = document.querySelector("#programTimeline");
+  if (!timeline || !config.program) return;
+  timeline.innerHTML = "";
+
+  config.program.forEach((item, index) => {
+    const article = document.createElement("article");
+    article.className = "timeline__item";
+
+    const marker = document.createElement("div");
+    marker.className = "timeline__marker";
+    const markerSpan = document.createElement("span");
+    markerSpan.textContent = String(index + 1);
+    marker.append(markerSpan);
+
+    const content = document.createElement("div");
+    content.className = "timeline__content";
+
+    const time = document.createElement("time");
+    if (item.date && item.time) {
+      time.innerHTML = `<span class="timeline-date">${item.date}</span><span class="timeline-hour">${item.time}</span>`;
+    } else if (item.date) {
+      time.innerHTML = `<span class="timeline-date">${item.date}</span>`;
+    } else {
+      time.innerHTML = `<span class="timeline-hour">${item.time || ""}</span>`;
+    }
+
+    const title = document.createElement("h3");
+    title.textContent = item.title || "";
+
+    const note = document.createElement("p");
+    note.style.whiteSpace = "pre-line";
+    note.textContent = item.note || item.detail || "";
+
+    content.append(time, title, note);
+
+    if (item.mapLink) {
+      const mapLink = document.createElement("a");
+      mapLink.className = "button button--light event-map-link";
+      mapLink.textContent = "View on Google Maps ↗";
+      mapLink.href = item.mapLink;
+      mapLink.target = "_blank";
+      mapLink.rel = "noreferrer";
+      mapLink.style.marginTop = "12px";
+      mapLink.style.display = "inline-block";
+      content.append(mapLink);
+    }
+
+    article.append(marker, content);
+    timeline.append(article);
+  });
+}
+
+export function renderPreWeddingEvents() {
+  const eventList = document.querySelector("#preWeddingEvents");
+  if (!eventList || !config.preWeddingEvents) return;
+  eventList.innerHTML = "";
+
+  config.preWeddingEvents.forEach((event) => {
+    const article = document.createElement("article");
+    article.className = "event-card";
+
+    const crest = document.createElement("span");
+    crest.className = "event-card__crest";
+    crest.setAttribute("aria-hidden", "true");
+    crest.textContent = "✦";
+    article.append(crest);
+
+    const title = document.createElement("h3");
+    title.textContent = event.title || event.name || "";
+    article.append(title);
+
+    if (event.date) {
+      const datePara = document.createElement("p");
+      datePara.className = "event-card__date";
+      datePara.textContent = event.date;
+      article.append(datePara);
+    }
+
+    const metaParts = [];
+    if (event.time && event.time.trim()) metaParts.push(event.time.trim());
+    if ((event.venue || event.location) && (event.venue || event.location).trim()) {
+      metaParts.push((event.venue || event.location).trim());
+    }
+
+    if (metaParts.length > 0) {
+      const metaPara = document.createElement("p");
+      metaPara.textContent = metaParts.join(" · ");
+      article.append(metaPara);
+    }
+
+    if (event.note && event.note.trim()) {
+      const noteElem = document.createElement("small");
+      noteElem.style.whiteSpace = "pre-line";
+      noteElem.textContent = event.note;
+      article.append(noteElem);
+    }
+
+    if (event.mapLink && event.mapLink.trim()) {
+      const mapLink = document.createElement("a");
+      mapLink.className = "button button--light event-map-link";
+      mapLink.textContent = "View on Google Maps ↗";
+      mapLink.href = event.mapLink;
+      mapLink.target = "_blank";
+      mapLink.rel = "noreferrer";
+      mapLink.style.marginTop = "10px";
+      mapLink.style.display = "inline-block";
+      article.append(mapLink);
+    }
+
+    eventList.append(article);
+  });
+}
+
+if (typeof window !== "undefined") {
+  window.setName = setName;
+  window.renderProgram = renderProgram;
+  window.renderPreWeddingEvents = renderPreWeddingEvents;
+}
 
 document.addEventListener("contextmenu", (event) => {
   event.preventDefault();
